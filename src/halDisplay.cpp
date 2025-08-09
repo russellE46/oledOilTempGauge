@@ -47,8 +47,6 @@ void displayPrintHappyChibi()
     display.display();
 }
 
-// 0xf8 = 0b 1111 0100
-
 /* @brief displayBlinkChibi()
  * Blinks happy chibi on the OLED screen on and off every 500 ms.
  * 

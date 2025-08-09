@@ -73,7 +73,7 @@ const unsigned char HAPPY_CHIBI_COMPRESSED [] PROGMEM =
 // This should be the last frame of the animation
 // First frame of the animation should have mouth straight like an underscore _
 // Animation should make mouth curve upward until it matches the image below.
-// You will need ot generate the image with the flat mouth.
+// You will need to generate the image with the flat mouth.
 // Write a loop that starts with the flat-mouth image and ends with the image below.
 // Idk what else to say rn.
 const unsigned char HAPPY_CHIBI [] PROGMEM = {
