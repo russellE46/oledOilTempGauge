@@ -54,6 +54,8 @@ void loop() {
       display.display();
       delay(100);
     }
+
+    displaySerialDebugPrint(HAPPY_CHIBI);
   }
   else 
   {

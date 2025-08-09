@@ -26,6 +26,8 @@ void displayInit();
 
 void displayPrintHappyChibi();
 
-void displayBlinkChibi(int timeSeconds);
+void displayBlinkChibi(int TimeSeconds);
+
+void displaySerialDebugPrint(const unsigned char * Image);
 
 #endif
