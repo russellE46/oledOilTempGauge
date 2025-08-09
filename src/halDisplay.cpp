@@ -49,7 +49,7 @@ void displayInit()
 void displayPrintHappyChibi()
 {
     display.clearDisplay();
-    display.drawBitmap(0, 0, HAPPY_CHIBI, 128, 60, WHITE);
+    display.drawBitmap(0, 0, BLANK_CHIBI, 128, 60, WHITE);
     display.display();
 }
 
@@ -99,13 +99,13 @@ void displaySerialDebugPrint(const unsigned char * PtrImage)
     {
         for (int j = 0; j < 8; j++)
         {
-            if (PtrImage[i] & (1 << j))
+            if (PtrImage[i] & (1 << (7 - j)))
             {
-                line += "*";
+                line += "**";
             }
             else
             {
-                line += " ";
+                line += "  ";
             }
         }
 

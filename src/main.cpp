@@ -7,6 +7,7 @@
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 const bool DEBUG = true;
+const bool NUMBERS_DEBUG = false;
 const bool THERMIST_DATA_COLLECTION = false;
 /***************************************************************************************
  * Need to delay for a bit to ensure that voltages have stabilized
@@ -42,17 +43,20 @@ void loop() {
     // If you suspect something is wrong with the screen or 
     // any connections, set DEBUG = true at the top of this file.
     // Chibi blink to show that firmware is alive
-    displayBlinkChibi(1);
+    displayBlinkChibi(5);
 
-    for (int i = 0; i < 20; i++)
+    if (NUMBERS_DEBUG)
     {
-      display.clearDisplay();
-      display.setTextSize(5);
-      display.setTextColor(SSD1306_WHITE);
-      display.setCursor(0, 0);     // Top-left corner
-      display.println(String(i));
-      display.display();
-      delay(100);
+      for (int i = 0; i < 20; i++)
+      {
+        display.clearDisplay();
+        display.setTextSize(5);
+        display.setTextColor(SSD1306_WHITE);
+        display.setCursor(0, 0);     // Top-left corner
+        display.println(String(i));
+        display.display();
+        delay(100);
+      }
     }
 
     displaySerialDebugPrint(HAPPY_CHIBI);
