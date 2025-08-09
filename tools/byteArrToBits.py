@@ -66,7 +66,6 @@ BYTE_ARR = [
 ]
 
 
-
 # ************************************************************************** 
 # * @brief - byteArrToBits()
 # * Takes the contents of BYTE_ARR, turns them into a bit array, and outputs
@@ -90,6 +89,7 @@ def byteArrToBits():
             if ( i > 0 and 
                 (i % 128 == 0)):
                 f.write('\n')
+
 
 if (__name__ == "__main__"):
     byteArrToBits()
