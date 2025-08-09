@@ -17,9 +17,12 @@
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 /***************************************************************************************
- * Will hang firmware if display init fails
- * If you suspect this, check the serial monitor
- * Set "Port" to /dev/tty.usbmodem##### - Seeed Studio
+ * @brief - displayInit()
+ *  Will hang firmware if display init fails.
+ *      If you suspect this, check the serial monitor.
+ *      Set "Port" to /dev/tty.usbmodem##### - Seeed Studio.
+ * 
+ * @return - None
  ***************************************************************************************/
 void displayInit()
 {
@@ -35,11 +38,13 @@ void displayInit()
     }
 }
 
-/* @brief displayPrintHappyChibi()
- *  Just prints happy chibi to the OLED.
- *
- */
 
+/***********************************************************************************
+ * @brief - displayPrintHappyChibi()
+ *  Just prints happy chibi to the OLED.
+ * 
+ * @return - None
+ ***********************************************************************************/
 void displayPrintHappyChibi()
 {
     display.clearDisplay();
@@ -47,12 +52,15 @@ void displayPrintHappyChibi()
     display.display();
 }
 
-/* @brief displayBlinkChibi()
- * Blinks happy chibi on the OLED screen on and off every 500 ms.
+
+/***********************************************************************************
+ * @brief - displayBlinkChibi()
+ *  Blinks happy chibi on the OLED screen on and off every 500 ms.
  * 
  * @param - timeSeconds: Int representing the amount of time to blink for 
- */
-
+ * 
+ * @return - None
+ ***********************************************************************************/
 void displayBlinkChibi(int timeSeconds)
 {
     int halfIntervalMs = timeSeconds * 1000 / 2;

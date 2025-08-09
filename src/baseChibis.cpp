@@ -1,8 +1,14 @@
 #include "baseChibis.hpp"
 
 
-
-// Ignore this for now
+/***************************************************************************************
+ * @brief - decompressImage()
+ *  Decompresses a run-length encoded image byte array into IMG_DECOMPRESSED
+ * 
+ *  NOT CURRENTLY WORKING
+ * 
+ * @return - None
+ ***************************************************************************************/
 void decompressImage(const unsigned char * CompImage)
 {
     PTR_COMPRESSED_CHIBI ptrCompChibi = (PTR_COMPRESSED_CHIBI)CompImage;

@@ -3,7 +3,7 @@
 
 #include <avr/pgmspace.h>
 
-#define SCREEN_WIDTH_PX 	128
+#define SCREEN_WIDTH_PX 	128										// Do I even need to put comments for this stuff?
 #define SCREEN_HEIGHT_PX	60
 #define NUM_PIXELS			SCREEN_WIDTH_PX * SCREEN_HEIGHT_PX
 #define LEN_IMG_BITMAP		NUM_PIXELS / 8

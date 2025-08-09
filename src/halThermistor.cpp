@@ -10,6 +10,9 @@
 #include "halThermistor.hpp"
 #include <Arduino.h>
 
+// Resistance values that have been experimentally colelcted at specified temperatures.
+// True values have been scaled down by a factor of RES_SCALE_FACTOR.
+// Muliply values in this array by RES_SCALE_FACTOR to get the real resistance.
 const unsigned int RESISTANCE_VALS[] =
   {
     1050,    // 80f  | 19    Ohms/deg f
@@ -32,6 +35,7 @@ const unsigned int RESISTANCE_VALS[] =
     60000   // 300f
   };
 
+// Temperatures used to experimentally collect resistance values.
 const unsigned int TEMP_VALS[] =
   {
     80,
@@ -54,16 +58,16 @@ const unsigned int TEMP_VALS[] =
     300
   };
 
-unsigned int tempSamples[NUM_SAMPLES];
-float resSamples[NUM_SAMPLES];
+unsigned int tempSamples[NUM_SAMPLES];      // Stores the last NUM_SAMPLES temperature samples
+float resSamples[NUM_SAMPLES];              // Stores the last NUM_SAMPLES resistances samples
 
-int tempIt = 0;
-int resIt = 0;
-unsigned int currTempSum = 0;
-double currResSum = 0;
+int tempIt = 0;                             // Iterator used to move through tempSamples arr
+int resIt = 0;                              // Iterator used ot move through the resSamples arr
 
-// Vout 4.76, 4.67
-const float SERIES_RESISTOR = 2200.0; // 10kΩ
+unsigned int currTempSum = 0;               // Current sum of all values in tempSamples arr
+double currResSum = 0;                      // Current sum of all values in resSamples arr
+
+const float SERIES_RESISTOR = 2200.0;       // 2.2kΩ resistor is used in the voltage divider circuit
 
 /***************************************************************************************
  * Initializes "rolling averages" with the first temp and resistance
@@ -84,6 +88,14 @@ void thermistorMonInit()
     }
 }
 
+
+/***********************************************************************************
+ * @brief - getResAvg()
+ *  Stores a new resistance value in the array of stored samples. Discards the oldest
+ *    resistance value. Gets the current average resistance based on the stored samples.
+ * 
+ * @return - float: The current average resistance based on the stored samples.
+ ***********************************************************************************/
 float getResAvg()
 {
   float newRes = getRes();
@@ -100,6 +112,14 @@ float getResAvg()
   return currResSum / NUM_SAMPLES;
 }
 
+
+/***********************************************************************************
+ * @brief - getTempAvg()
+ *  Stores a new temperature value in the array of stored samples. Discards the oldest
+ *    temperature value. Gets the current average temperature based on the stored samples.
+ * 
+ * @return - float: The current average temperature based on the stored samples.
+ ***********************************************************************************/
 int getTempAvg()
 {
   int newTemp = getTemp(true);
@@ -114,6 +134,14 @@ int getTempAvg()
   return currTempSum / NUM_SAMPLES;
 }
 
+
+/***********************************************************************************
+ * @brief - getRes()
+ *  Calculates the current resistance of the thermistor based on the series resistor
+ *    and the voltage sensed on the SENSOR_PIN
+ * 
+ * @return - float: The current resistance value of the thermistor
+ ***********************************************************************************/
 float getRes()
 {
   int adcValue = analogRead(SENSOR_PIN);
@@ -131,22 +159,55 @@ float getRes()
   return resistance;
 }
 
-int getTemp(bool print)
+
+/***********************************************************************************
+ * @brief - getTemp()
+ *  Returns the current temperature of the thermistor.
+ * 
+ * @param - bool Print: boolean that makes FW print debug info to the serial port if true.
+ * 
+ * @return - float: The current temperature of the thermistor.
+ ***********************************************************************************/
+int getTemp(bool Print)
 {
-  return int(resToTemp(getRes(), print));
+  return int(resToTemp(getRes(), Print));
 }
 
-unsigned long int getScaledRefRes(unsigned char a)
+
+/***********************************************************************************
+ * @brief - getScaledRefRes()
+ *  Gets the actual resistance value at the requested index of the RESISTANCE_VALS array.
+ *    Resistance values in the RESISTANCE_VALS array are scaled down by RES_SCALE_FACTOR
+ *    in order to save memory. This is more important on the nano platform where memory
+ *    is extremely limited.
+ * 
+ * @param - uint8_t index: index of RESISTANCE_VALS to get actual value of
+ * 
+ * @return - float: The current average resistance based on the stored samples.
+ ***********************************************************************************/
+unsigned long int getScaledRefRes(unsigned char index)
 {
-  return (unsigned long int)(RESISTANCE_VALS[a]) * RES_SCALE_FACTOR;
+  return (unsigned long int)(RESISTANCE_VALS[index]) * RES_SCALE_FACTOR;
 }
 
-float resToTemp(float Res, bool print)
+
+/***********************************************************************************
+ * @brief - resToTemp()
+ *  Calculates/estimates the current temperature of the thermistor based on the
+ *    provided resistance value. Performs linear interpolation to estimate values.
+ * 
+ * @param - float Res: Resistance value to return corresponding temperature of
+ * @param - bool Print: boolean that makes FW print debug info to the serial port if true.
+ * 
+ * @return - float: The current average resistance based on the stored samples.
+ ***********************************************************************************/
+float resToTemp(float Res, bool Print)
 {
     float lookupRes = Res;
     float temp = 0;
     float slope;
 
+    // Resistance is less than 
     if (lookupRes < getScaledRefRes(0))
     {
       slope = getSlope(0, 1);
@@ -165,7 +226,7 @@ float resToTemp(float Res, bool print)
         if (lookupRes >= getScaledRefRes(i) &&
             lookupRes < getScaledRefRes(i + 1))
         {
-          if (print)
+          if (Print)
           {
             Serial.println(String(lookupRes) + " " + getScaledRefRes(i) + " " + getScaledRefRes(i + 1) + " " + String(i) + "\n");
           }
@@ -179,12 +240,32 @@ float resToTemp(float Res, bool print)
     return temp;
 }
 
-float getSlope(unsigned char a, unsigned char b)
+
+/***********************************************************************************
+ * @brief - resToTemp()
+ *  Calculates/estimates the current temperature of the thermistor based on the
+ *    provided resistance value. Performs linear interpolation to estimate values.
+ * 
+ * @param - uint8_t ind0: Lower index
+ * @param - uint8_t ind1: Upper index
+ * 
+ * @return - float: Change in temp per change in resistance between ind0 and ind1
+ ***********************************************************************************/
+float getSlope(unsigned char ind0, unsigned char ind1)
 {
-   return (float(TEMP_VALS[b]) - float(TEMP_VALS[a])) / (float(getScaledRefRes(b)) - float(getScaledRefRes(a)));
+   return (float(TEMP_VALS[ind1]) - float(TEMP_VALS[ind0])) / (float(getScaledRefRes(ind1)) - float(getScaledRefRes(ind0)));
 }
 
+
 #ifdef __AVR__
+/***********************************************************************************
+ * @brief - readVcc()
+ *  Reads internal reference voltage in mV. Only works on arduino, not seeed.
+ *    I measured voltage with a multimeter and saw values between 4.67 and 4.76.
+ *    This function will probably return values in or near that range.
+ * 
+ * @return - long: Internal reference voltage in mV
+ ***********************************************************************************/
 long readVcc()
 {
   // Set the reference to Vcc and the measurement to the internal 1.1V reference
