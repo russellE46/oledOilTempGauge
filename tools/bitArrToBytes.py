@@ -30,7 +30,7 @@ def bitArrToBytes():
         f.write('\t{\n\t\t')
         for i, byte in enumerate(byteArr, 0):
             if (byte < 0x10):
-                hexStr = "0" + hex(byte)
+                hexStr = "0x" + "0" + hex(byte)[2]
             else:
                 hexStr = hex(byte)
 
