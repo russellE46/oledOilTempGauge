@@ -26,6 +26,6 @@ void displayInit();
 
 void displayPrintHappyChibi();
 
-void displayBlinkChibi(int IntervalSeconds);
+void displayBlinkChibi(int timeSeconds);
 
 #endif

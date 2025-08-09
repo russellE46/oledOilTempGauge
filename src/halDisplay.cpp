@@ -35,6 +35,11 @@ void displayInit()
     }
 }
 
+/* @brief displayPrintHappyChibi()
+ *  Just prints happy chibi to the OLED.
+ *
+ */
+
 void displayPrintHappyChibi()
 {
     display.clearDisplay();
@@ -42,17 +47,25 @@ void displayPrintHappyChibi()
     display.display();
 }
 
-void displayBlinkChibi(int IntervalSeconds)
+// 0xf8 = 0b 1111 0100
+
+/* @brief displayBlinkChibi()
+ * Blinks happy chibi on the OLED screen on and off every 500 ms.
+ * 
+ * @param - timeSeconds: Int representing the amount of time to blink for 
+ */
+
+void displayBlinkChibi(int timeSeconds)
 {
-    int halfIntervalMs = IntervalSeconds * 1000 / 2;
-    for (int i = 0; i < IntervalSeconds; i++)
+    int halfIntervalMs = timeSeconds * 1000 / 2;
+    for (int i = 0; i < timeSeconds; i++)
     {
         // Blink screen while waiting so that we can show that
         // firmware is alive.
         displayPrintHappyChibi();
-        delay(halfIntervalMs);
+        delay(500);
         display.clearDisplay();
         display.display();
-        delay(halfIntervalMs);
+        delay(500);
     }
 }
