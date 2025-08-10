@@ -1,11 +1,14 @@
 #include "baseChibis.hpp"
 
-#define SMILE_COEFFICIENT       0.4
-#define SMILE_ORIGIN_X          SCREEN_WIDTH / 2
-#define SMILE_ORIGIN_Y          11
-#define SMILE_WIDTH_PX          70
-#define SMILE_HEIGHT_PX         3             
+#define SMILE_COEFFICIENT                   0.4
+#define SMILE_ORIGIN_X                      SCREEN_WIDTH / 2
+#define SMILE_ORIGIN_Y                      11
+#define SMILE_WIDTH_PX                      70
+#define SMILE_HEIGHT_PX                     3             
 
+#define SMILE_FINAL_CURVE_COEFFICIENT       0.75
+#define SMILE_NUM_FRAMES                    30
+#define SMILE_FINAL_CURVE_DERIV(x)          2 * SMILE_FINAL_CURVE_COEFFICIENT * x   // Derivative of SFCC * x^2        
 
 // HAPPY_CHIBI compressed using run-length encoding
 // Can ignore for now
@@ -196,7 +199,7 @@ const unsigned char * ALL_CHIBIS [] PROGMEM = {
 	HAPPY_CHIBI
 };
 
-unsigned char outputImage [LEN_IMG_BYTE_ARR];
+unsigned char chibiOutputImage [LEN_IMG_BYTE_ARR];
 
 
 /***************************************************************************************
@@ -235,12 +238,29 @@ void rleDecompressImage(const unsigned char * CompImage)
  *  Returns the Nth frame of the blank chibi -> smiling chibi animation
  * 
  * @param - Frame: Number of the frame to return
+ * @param - Load: Boolean that determines if the base image needs to be loaded from flash
+ *                  Should only be necessary if retrieving frame 0 or if not loading frames
+ *                  sequentially.
  * 
  * @return - unsigned char * : A pointer to the first element in an image byte array
  ***********************************************************************************/
-unsigned char * chibisAnimateBlankToSmile(unsigned char Frame)
+unsigned char * chibisAnimateBlankToSmile(unsigned char Frame, bool Load)
 {
-    return nullptr;
+    char offsetX;
+    char offsetY;
+    if (Frame == 0 || Load == true)
+    {
+        chibisLoadBaseOutputFrame(NUM_BLANK_CHIBI);
+    }
+
+    for (int i = 0; i < SMILE_WIDTH_PX; i++)
+    {
+        offsetX = (SMILE_WIDTH_PX - SMILE_ORIGIN_X + i);
+        offsetY = (float(Frame) / float(SMILE_NUM_FRAMES)) * SMILE_FINAL_CURVE_DERIV(offsetX);
+
+        chibisDrawPixel(SMILE_ORIGIN_X, SMILE_ORIGIN_Y,
+                        offsetX, offsetY);
+    }
 }
 
 
@@ -256,6 +276,55 @@ void chibisLoadBaseOutputFrame(unsigned char Index)
 {
     for (int i = 0; i < LEN_IMG_BYTE_ARR; i++)
     {
-        outputImage[i] = pgm_read_byte(&(ALL_CHIBIS[Index][i]));
+        chibiOutputImage[i] = pgm_read_byte(&(ALL_CHIBIS[Index][i]));
     }
+}
+
+
+/***********************************************************************************
+ * @brief - chibisDrawPixel()
+ *  Draws a pixel in a specified coordinate. Set offsetX and offsetY to zero
+ *      if you just want to draw at the origin coordinates.
+ * 
+ * @param - OriginX: Point of reference in X dimensiom
+ * @param - OriginY: Point of reference in Y dimension
+ * @param - OffsetX: Pixel offset in X dimension relative to point of reference
+ * @param - OffsetY: Pixel offset in X dimension relative to point of reference
+ * 
+ * @return - CHIBIS_STATUS_SUCCESS: Operation completed successfully
+ * @return - CHIBIS_STATUS_INVALID_COORDS: Invalid coordinates calculated from parameters
+ ***********************************************************************************/
+CHIBIS_STATUS chibisDrawPixel(unsigned char OriginX, unsigned char OriginY, char OffsetX, char OffsetY)
+{
+    CHIBIS_STATUS status = CHIBIS_STATUS_SUCCESS;
+    int absoluteX, absoluteY, byteArrIndex;
+
+    absoluteX = OriginX + OffsetX;
+    absoluteY = OriginY + OffsetY;
+
+    if (((absoluteX) < 0) ||
+        ((absoluteY) < 0) ||
+        ((absoluteX) >= SCREEN_WIDTH) ||
+        ((absoluteY) >= SCREEN_HEIGHT))
+    {
+        status = CHIBIS_STATUS_INVALID_COORDS;
+        Serial.printf("chibisDrawPixel() failed with status: %d\r\n", status);
+        if (CHIBIS_DEBUG)
+        {
+            Serial.printf("OriginX: %d, OriginY: %d, OffsetX: %d, OffsetY: %d\r\n",
+                                OriginX, OriginY, OffsetX, OffsetY);
+        }
+
+        return status;
+    }
+    
+    // Index in byte array is 16 * absoluteY + absoluteX / 8
+    // Bit index within byte index = absoluteX % 8
+    // absoluteX = 6, absoluteY = 0.
+    // 16 * 0 + 6 / 8 = 0
+    // 6 % 8 = 6
+    // bit[6] || bit[7-6];
+    // byteArray[0] = byteArray[0] 
+
+    return status;
 }
