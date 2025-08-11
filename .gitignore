@@ -14,4 +14,5 @@
 *.log
 
 # Outputs of tools
-tools/outputs/*
+tools/outputs/
+!tools/outputs/.gitkeep
