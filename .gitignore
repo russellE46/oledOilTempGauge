@@ -12,3 +12,6 @@
 
 # Any temp files
 *.log
+
+# Outputs of tools
+tools/outputs/*

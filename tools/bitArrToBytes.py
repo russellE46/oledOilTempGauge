@@ -1,3 +1,7 @@
+from pathlib import Path
+
+SCRIPT_DIR = str(Path(__file__).resolve().parent)
+
 IMAGE_WIDTH = 128               # bits
 
 # ************************************************************************** 
@@ -11,7 +15,7 @@ def bitArrToBytes():
     byteArr = []
     byte = 0
 
-    with open("outputs/bitArr.txt", 'r') as f:
+    with open(SCRIPT_DIR + "/outputs/bitArr.txt", 'r') as f:
         txt = f.read()
         txt = txt.replace('\n', '')
         for i in range(0, len(txt)):
@@ -26,7 +30,7 @@ def bitArrToBytes():
         byteArr.append(byte)
 
     print (len(byteArr))
-    with open("outputs/byteArr.txt", "w") as f:
+    with open(SCRIPT_DIR + "/outputs/byteArr.txt", "w") as f:
         f.write('\t{\n\t\t')
         for i, byte in enumerate(byteArr, 0):
             if (byte < 0x10):

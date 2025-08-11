@@ -1,3 +1,7 @@
+from pathlib import Path
+
+SCRIPT_DIR = str(Path(__file__).resolve().parent)
+
 IMAGE_WIDTH = 128               # bits
 
 # Paste an image byte array here
@@ -83,7 +87,7 @@ def byteArrToBits():
                 bitArr.append("0")
             
 
-    with open("outputs/bitArr.txt", 'w') as f:
+    with open(SCRIPT_DIR + "/outputs/bitArr.txt", 'w') as f:
         for i, bit in enumerate(bitArr):
             f.write(bit)
             if ( i > 0 and 
