@@ -13,6 +13,8 @@
 // Resistance values that have been experimentally colelcted at specified temperatures.
 // True values have been scaled down by a factor of RES_SCALE_FACTOR.
 // Muliply values in this array by RES_SCALE_FACTOR to get the real resistance.
+
+#ifdef __AVR__
 const unsigned int RESISTANCE_VALS[] =
   {
     1050,    // 80f  | 19    Ohms/deg f
@@ -34,6 +36,37 @@ const unsigned int RESISTANCE_VALS[] =
     42000,   // 280f | 232.5 Ohms/deg f
     60000   // 300f
   };
+
+#define SERIES_RESISTOR   2200.0       // 2.2kΩ resistor is used in the voltage divider circuit
+#define RES_SCALE_FACTOR  2       // Factor that RESISTANCE_VALS values are scaled down by
+#else
+
+const unsigned int RESISTANCE_VALS[] =
+  {
+    600,    //   14440  | 80f  | 19    Ohms/deg f
+    950,    //   19000  | 120f | 33    Ohms/deg f
+    1215,   //   24300  | 140f | 31    Ohms/deg f
+    1600,   //   32000  | 160f | 53    Ohms/deg f
+    1850,   //   37000  | 170f | 55    Ohms/deg f
+    2175,   //   43500  | 180f | 60    Ohms/deg f
+    2535,   //   50700  | 190f | 60    Ohms/deg f
+    2750,   //   55000  | 195f | 72    Ohms/deg f
+    3000,   //   60000  | 200f | 80    Ohms/deg f
+    3285,   //   65700  | 205f | 76    Ohms/deg f
+    3500,   //   70000  | 210f | 80    Ohms/deg f
+    3850,   //   77000  | 215f | 84    Ohms/deg f
+    4150,   //   83000  | 220f | 55    Ohms/deg f
+    4875,   //   97500  | 230f | 75    Ohms/deg f
+    5700,   //   114000 | 240f | 174   Ohms/deg f
+    7750,   //   155000 | 260f | 197   Ohms/deg f
+    10600,  //   212000 | 280f | 232.5 Ohms/deg f
+    14000   //   280000 | 300f
+  };
+
+#define SERIES_RESISTOR     2200.0
+#define RES_SCALE_FACTOR    20       // Factor that RESISTANCE_VALS values are scaled down by
+#endif
+
 
 // Temperatures used to experimentally collect resistance values.
 const unsigned int TEMP_VALS[] =
@@ -67,7 +100,6 @@ int resIt = 0;                              // Iterator used ot move through the
 unsigned int currTempSum = 0;               // Current sum of all values in tempSamples arr
 double currResSum = 0;                      // Current sum of all values in resSamples arr
 
-const float SERIES_RESISTOR = 2200.0;       // 2.2kΩ resistor is used in the voltage divider circuit
 
 /***************************************************************************************
  * Initializes "rolling averages" with the first temp and resistance

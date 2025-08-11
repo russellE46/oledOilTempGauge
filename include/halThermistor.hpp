@@ -13,8 +13,8 @@
 #include <Wire.h>
 
 #define NUM_RES_VALUES    18      // Number of resistance and temperature values stored for reference
-#define NUM_SAMPLES       10      // Number of samples stored and used to calculate rolling averages
-#define RES_SCALE_FACTOR  2       // Factor that RESISTANCE_VALS values are scaled down by
+#define NUM_SAMPLES       120      // Number of samples stored and used to calculate rolling averages
+
 
 #ifdef __AVR__
   #define ADC_RES           1023.0
@@ -22,7 +22,7 @@
 #else
   #define ADC_RES           4095.0
   #define REF_mV            3300.0
-  #define SENSOR_PIN        A0
+  #define SENSOR_PIN        7
 #endif
 
 // PARALLEL ARRAYS

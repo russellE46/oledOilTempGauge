@@ -6,9 +6,10 @@
 #define INIT_DELAY_SEC    2
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-const bool DEBUG = true;
+const bool DEBUG = false;
 const bool NUMBERS_DEBUG = false;
-const bool THERMIST_DATA_COLLECTION = false;
+const bool THERMIST_DATA_COLLECTION = true;
+
 /***************************************************************************************
  * Need to delay for a bit to ensure that voltages have stabilized
  * after power-on. Not sure if this is necessary, but doesn't hurt.
@@ -16,6 +17,20 @@ const bool THERMIST_DATA_COLLECTION = false;
 void startupDelay()
 {
   displayBlinkChibi(INIT_DELAY_SEC);
+}
+
+void numbersDebug()
+{
+  for (int i = 0; i < 20; i++)
+  {
+    display.clearDisplay();
+    display.setTextSize(5);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0, 0);     // Top-left corner
+    display.println(String(i));
+    display.display();
+    delay(100);
+  }
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -31,7 +46,7 @@ void setup() {
 
   startupDelay();
 
-  //thermistorMonInit();
+  thermistorMonInit();
 }
 
 // Main code that continuously loops forever
@@ -47,16 +62,7 @@ void loop() {
 
     if (NUMBERS_DEBUG)
     {
-      for (int i = 0; i < 20; i++)
-      {
-        display.clearDisplay();
-        display.setTextSize(5);
-        display.setTextColor(SSD1306_WHITE);
-        display.setCursor(0, 0);     // Top-left corner
-        display.println(String(i));
-        display.display();
-        delay(100);
-      }
+      numbersDebug();
     }
 
     displaySerialDebugPrint(HAPPY_CHIBI);
@@ -78,7 +84,7 @@ void loop() {
 
     if (THERMIST_DATA_COLLECTION)
     {
-      display.println(String(getRes()) + " Ohms");
+      display.println(String(getResAvg()) + " Ohms");
       #ifdef __AVR__
       display.println(String(readVcc()) + " mV");
       #endif
@@ -87,5 +93,5 @@ void loop() {
   }
 
   Serial.println(F("I'm alive!\r\n"));
-  delay(1000);
+  delay(10);
 }
