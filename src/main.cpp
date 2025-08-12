@@ -85,9 +85,8 @@ void loop() {
     if (THERMIST_DATA_COLLECTION)
     {
       display.println(String(getResAvg()) + " Ohms");
-      #ifdef __AVR__
-      display.println(String(readVcc()) + " mV");
-      #endif
+      display.println(String(getPinVoltage(SENSOR_PIN)) + "V");
+      //display.println(String(ADC->CTRLB.bit.RESSEL));
     }
     display.display();           // Push to screen
   }

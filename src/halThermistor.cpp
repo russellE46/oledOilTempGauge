@@ -15,80 +15,59 @@
 // Muliply values in this array by RES_SCALE_FACTOR to get the real resistance.
 
 #ifdef __AVR__
-const unsigned int RESISTANCE_VALS[] =
-  {
-    1050,    // 80f  | 19    Ohms/deg f
-    2250,    // 120f | 33    Ohms/deg f
-    3100,    // 140f | 31    Ohms/deg f
-    4500,    // 160f | 53    Ohms/deg f
-    5500,   // 170f | 55    Ohms/deg f
-    6750,   // 180f | 60    Ohms/deg f
-    7750,   // 190f | 60    Ohms/deg f
-    8400,   // 195f | 72    Ohms/deg f
-    9300,   // 200f | 80    Ohms/deg f
-    10350,   // 205f | 76    Ohms/deg f
-    11400,   // 210f | 80    Ohms/deg f
-    12600,   // 215f | 84    Ohms/deg f
-    14250,   // 220f | 55    Ohms/deg f
-    17250,   // 230f | 75    Ohms/deg f
-    21000,   // 240f | 174   Ohms/deg f
-    30000,   // 260f | 197   Ohms/deg f
-    42000,   // 280f | 232.5 Ohms/deg f
-    60000   // 300f
-  };
-
-#define SERIES_RESISTOR   2200.0       // 2.2kΩ resistor is used in the voltage divider circuit
-#define RES_SCALE_FACTOR  2       // Factor that RESISTANCE_VALS values are scaled down by
+#define ADC_RES_NUM_BITS    10
 #else
-
-const unsigned int RESISTANCE_VALS[] =
-  {
-    600,    //   14440  | 80f  | 19    Ohms/deg f
-    950,    //   19000  | 120f | 33    Ohms/deg f
-    1215,   //   24300  | 140f | 31    Ohms/deg f
-    1600,   //   32000  | 160f | 53    Ohms/deg f
-    1850,   //   37000  | 170f | 55    Ohms/deg f
-    2175,   //   43500  | 180f | 60    Ohms/deg f
-    2535,   //   50700  | 190f | 60    Ohms/deg f
-    2750,   //   55000  | 195f | 72    Ohms/deg f
-    3000,   //   60000  | 200f | 80    Ohms/deg f
-    3285,   //   65700  | 205f | 76    Ohms/deg f
-    3500,   //   70000  | 210f | 80    Ohms/deg f
-    3850,   //   77000  | 215f | 84    Ohms/deg f
-    4150,   //   83000  | 220f | 55    Ohms/deg f
-    4875,   //   97500  | 230f | 75    Ohms/deg f
-    5700,   //   114000 | 240f | 174   Ohms/deg f
-    7750,   //   155000 | 260f | 197   Ohms/deg f
-    10600,  //   212000 | 280f | 232.5 Ohms/deg f
-    14000   //   280000 | 300f
-  };
-
-#define SERIES_RESISTOR     2200.0
-#define RES_SCALE_FACTOR    20       // Factor that RESISTANCE_VALS values are scaled down by
+#define ADC_RES_NUM_BITS    12
 #endif
 
+#define ADC_RES             float(1 << ADC_RES_NUM_BITS)
 
-// Temperatures used to experimentally collect resistance values.
+#define SERIES_RESISTOR     150.0   // 150 Ohm series resistor is used in voltage divider circuit
+#define RES_SCALE_FACTOR    1       // Factor that RESISTANCE_VALS values are scaled down by
+
+// Slightly altered resistance values based on table in
+// Amazon listing: https://www.amazon.com/PQY-Temperature-Sensor-Sender-Electric/dp/B08MTJJTFK/ref=sr_1_5?crid=OERZDIYZEP9L&dib=eyJ2IjoiMSJ9.Ax70sMO3h5wLucVKUUK2Bwrb6nxw-Lu6bLvDJpekDGBI4DigFONbrwXPxV-sgw89X6lzM9883L_3LrC8yWnMoEvriPWv3NNzZ4iyQO-4LNvSLSnKYAsUfNtXQv3_lTDQFCRILeHsCVX_bl78Ms5qUjWPhXeWWkkRMH-TlVPSYIoXB5e7FeHGZ1fF0KqCmZFNPYI2JyvKXpjqIFwoegBKk649bYwI64wWf6Y5QYecLKk.b8o_X-dBp_B8-4zhSeJtW5AX77OmJs_QCWHkZqiLxsc&dib_tag=se&keywords=thermistor+1%2F8+npt&qid=1754964195&sprefix=thermistor+1%2F8+npt%2Caps%2C155&sr=8-5
+const unsigned int RESISTANCE_VALS[] =
+  {
+    3200,  //    | 68f
+    2150,  //    | 86f
+    1420,  //    | 104f 
+    895,   //    | 122f *
+    620,   //    | 140f *
+    428,   //    | 158f *
+    304,   //    | 176f *
+    224,   //    | 194f *
+    160,   //    | 212f *
+    124,   //    | 230f *
+    95,    //    | 248f *
+    73,    //    | 266f *
+    59,    //    | 284f *
+    45,    //    | 302f *
+    37,    //    | 320f *  
+    30    //     | 338f *
+  };
+
+// Farenheit temperatures based on datasheet in
+// Amazon listing for thermistor: 
+// https://www.amazon.com/PQY-Temperature-Sensor-Sender-Electric/dp/B08MTJJTFK/ref=sr_1_5?crid=OERZDIYZEP9L&dib=eyJ2IjoiMSJ9.Ax70sMO3h5wLucVKUUK2Bwrb6nxw-Lu6bLvDJpekDGBI4DigFONbrwXPxV-sgw89X6lzM9883L_3LrC8yWnMoEvriPWv3NNzZ4iyQO-4LNvSLSnKYAsUfNtXQv3_lTDQFCRILeHsCVX_bl78Ms5qUjWPhXeWWkkRMH-TlVPSYIoXB5e7FeHGZ1fF0KqCmZFNPYI2JyvKXpjqIFwoegBKk649bYwI64wWf6Y5QYecLKk.b8o_X-dBp_B8-4zhSeJtW5AX77OmJs_QCWHkZqiLxsc&dib_tag=se&keywords=thermistor+1%2F8+npt&qid=1754964195&sprefix=thermistor+1%2F8+npt%2Caps%2C155&sr=8-5
 const unsigned int TEMP_VALS[] =
   {
-    80,
-    120,
+    68,
+    86,
+    104,
+    122,
     140,
-    160,  // -10
-    170,
-    180,
-    190,
-    195,
-    200,
-    205,
-    210, // -10
-    215,
-    220,
+    158,
+    176,
+    194,
+    212,
     230,
-    240,
-    260,
-    280,
-    300
+    248, 
+    266,
+    284,
+    302,
+    320,
+    338
   };
 
 unsigned int tempSamples[NUM_SAMPLES];      // Stores the last NUM_SAMPLES temperature samples
@@ -107,6 +86,10 @@ double currResSum = 0;                      // Current sum of all values in resS
  ***************************************************************************************/
 void thermistorMonInit()
 {
+    #ifndef __AVR__
+    analogReadResolution(ADC_RES_NUM_BITS);
+    #endif
+
     float temp = getTemp(false);
     float res = getRes();
     for (int i = 0; i < NUM_SAMPLES; i++)
@@ -133,12 +116,10 @@ float getResAvg()
   float newRes = getRes();
   resIt = resIt % NUM_SAMPLES;
 
-  // crash zone
   currResSum -= resSamples[resIt];
-  // store new sample
-  resSamples[resIt] = newRes;
+  resSamples[resIt] = newRes;       // store new sample
   currResSum += newRes;
-  // end crash zone
+
   resIt++;
 
   return currResSum / NUM_SAMPLES;
@@ -158,14 +139,27 @@ int getTempAvg()
   tempIt = tempIt % NUM_SAMPLES;
   
   currTempSum -= tempSamples[tempIt];
-  // store new sample
-  tempSamples[tempIt] = newTemp;
+  tempSamples[tempIt] = newTemp;        // store new sample
   currTempSum += newTemp;
   
   tempIt++;
   return currTempSum / NUM_SAMPLES;
 }
 
+
+/***********************************************************************************
+ * @brief - getPinVoltage()
+ *  Calculates the current voltage sensed on the requested pin
+ * 
+ * @return - float: The current resistance value of the thermistor
+ ***********************************************************************************/
+float getPinVoltage(unsigned char Pin)
+{
+  int adcValue = analogRead(Pin);
+  float refV = readVcc();
+
+  return (adcValue / ADC_RES) * refV;
+}
 
 /***********************************************************************************
  * @brief - getRes()
@@ -176,17 +170,12 @@ int getTempAvg()
  ***********************************************************************************/
 float getRes()
 {
-  int adcValue = analogRead(SENSOR_PIN);
   float refV, voltage, resistance;
-
-  #ifdef __AVR__
+  voltage = getPinVoltage(SENSOR_PIN);
   refV = readVcc();
-  #else
-  refV = REF_mV;
-  #endif
+  //resistance = SERIES_RESISTOR * (refV / voltage - 1.0);
 
-  voltage = adcValue * refV / 1000.0 / ADC_RES;
-  resistance = SERIES_RESISTOR * (refV / 1000.0 / voltage - 1.0);
+  resistance = (voltage * SERIES_RESISTOR) / (refV - voltage);
 
   return resistance;
 }
@@ -240,13 +229,13 @@ float resToTemp(float Res, bool Print)
     float slope;
 
     // Resistance is less than 
-    if (lookupRes < getScaledRefRes(0))
+    if (lookupRes > getScaledRefRes(0))
     {
       slope = getSlope(0, 1);
       temp = TEMP_VALS[0] - (slope * (getScaledRefRes(0) - lookupRes));
     }
 
-    else if (lookupRes >= getScaledRefRes(NUM_RES_VALUES - 1))
+    else if (lookupRes <= getScaledRefRes(NUM_RES_VALUES - 1))
     {
       slope = getSlope(NUM_RES_VALUES - 2, NUM_RES_VALUES - 1);
       temp = TEMP_VALS[NUM_RES_VALUES - 1] + (slope * (lookupRes - getScaledRefRes(NUM_RES_VALUES - 1)));
@@ -255,8 +244,8 @@ float resToTemp(float Res, bool Print)
     {
       for (int i  = 0; i < NUM_RES_VALUES - 1; i++)
       {
-        if (lookupRes >= getScaledRefRes(i) &&
-            lookupRes < getScaledRefRes(i + 1))
+        if (lookupRes <= getScaledRefRes(i) &&
+            lookupRes > getScaledRefRes(i + 1))
         {
           if (Print)
           {
@@ -289,7 +278,6 @@ float getSlope(unsigned char ind0, unsigned char ind1)
 }
 
 
-#ifdef __AVR__
 /***********************************************************************************
  * @brief - readVcc()
  *  Reads internal reference voltage in mV. Only works on arduino, not seeed.
@@ -298,8 +286,9 @@ float getSlope(unsigned char ind0, unsigned char ind1)
  * 
  * @return - long: Internal reference voltage in mV
  ***********************************************************************************/
-long readVcc()
+float readVcc()
 {
+#ifdef __AVR__
   // Set the reference to Vcc and the measurement to the internal 1.1V reference
   ADMUX = _BV(REFS0) | _BV(MUX3) | _BV(MUX2) | _BV(MUX1);
   delay(200); // Wait for Vref to settle
@@ -308,6 +297,9 @@ long readVcc()
   uint16_t result = ADC;
 
   // 1.1V * 1023 / result = Vcc in millivolts
-  return 1125300L / result; // ~1.1V * 1023 * 1000
-}
+  return 1125300f / float(result); // ~1.1V * 1023 * 1000
+
+#else
+  return REF_mV / 1000.0;
 #endif
+}
